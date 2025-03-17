@@ -1,0 +1,2 @@
+/usr/bin/ar qc libKRand.a CMakeFiles/KRand.dir/src/KRand.cpp.o
+/usr/bin/ranlib libKRand.a

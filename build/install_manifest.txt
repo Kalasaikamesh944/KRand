@@ -1,0 +1,3 @@
+/usr/local/lib/libKRand.a
+/usr/local/lib/libKRandShared.so
+/usr/local/include/KRand/KRand.h

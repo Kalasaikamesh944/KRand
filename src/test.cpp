@@ -1,5 +1,5 @@
 #include <iostream>
-#include <KRand.h>  // Ensure KRand.h is in /usr/local/include
+#include "KRand.h"  // Ensure KRand.h is in /usr/local/include
 
 int main() {
     std::cout << "Testing KRand Library..." << std::endl;
