@@ -43,6 +43,7 @@ SOFTWARE.
 #include <netinet/udp.h>
 #include <netinet/ip.h>
 #include <pcap.h>
+#include <iomanip> 
 
 #ifdef _WIN32
     #include <windows.h>
@@ -492,14 +493,13 @@ void KRand::advanced_port_scan(const std::string &target_ip) {
     std::cout << "[+] Advanced port scan completed." << std::endl;
 }
 
-/*** Packet Sniffing using libpcap ***/
-void KRand::packet_sniffing() {
+void KRand::packet_sniffing(std::string &interface) {
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle;
     struct pcap_pkthdr header;
     const u_char *packet;
 
-    handle = pcap_open_live("eth0", PACKET_SIZE, 1, 1000, errbuf);
+    handle = pcap_open_live(interface.c_str(), PACKET_SIZE, 1, 1000, errbuf);
     if (handle == nullptr) {
         std::cerr << "[-] Error opening device for packet capture: " << errbuf << std::endl;
         return;
@@ -510,6 +510,25 @@ void KRand::packet_sniffing() {
         packet = pcap_next(handle, &header);
         if (packet) {
             std::cout << "[*] Captured packet of size: " << header.len << " bytes\n";
+            std::cout << "[*] Packet Data:\n";
+
+            // Print packet data in hex and ASCII
+            for (int i = 0; i < header.len; i++) {
+                // Print in hex format
+                std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)packet[i] << " ";
+
+                // Print ASCII if printable
+                if ((i + 1) % 16 == 0 || i == header.len - 1) {
+                    std::cout << "   ";
+                    for (int j = i - (i % 16); j <= i; j++) {
+                        if (std::isprint(packet[j]))
+                            std::cout << (char)packet[j];
+                        else
+                            std::cout << ".";
+                    }
+                    std::cout << std::endl;
+                }
+            }
         }
     }
 

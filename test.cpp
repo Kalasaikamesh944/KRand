@@ -44,6 +44,7 @@ int main() {
     KRand krand;
     int choice;
     std::string input, key, ip, user, password_list;
+    std::string interface;
     int start_port, end_port;
 
     while (true) {
@@ -85,7 +86,9 @@ int main() {
 
             case 5:
                 std::cout << "Starting packet sniffing..." << std::endl;
-                krand.packet_sniffing();
+                std::cout << "Enter the interface name...  ";
+                std::cin >> interface; 
+                krand.packet_sniffing(interface);
                 break;
 
             case 6:

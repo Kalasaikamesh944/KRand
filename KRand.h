@@ -66,7 +66,7 @@ public:
 
     /*** 🔎 Advanced Features (Planned) ***/
     void advanced_port_scan(const std::string &target_ip);  // SYN, UDP, Stealth Scan
-    void packet_sniffing();  // Network Packet Capture
+    void packet_sniffing(std::string &interface);  // Network Packet Capture
     void vulnerability_scan();  // Automated CVE Vulnerability Detection
     void ssh_brute_force(const std::string &target_ip, const std::string &user, const std::string &password_list);
     void network_enumeration(const std::string &network_range);
