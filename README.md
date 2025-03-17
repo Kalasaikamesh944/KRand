@@ -1,6 +1,11 @@
 # KRand
 KRand powerful module with cpp for hacking
 
+## Compilition usage
+```bash 
+g++ test.cpp -o test_krand -I/usr/local/include -L/usr/local/lib -lKRand -lpcap -lcpr -lcurl -lssl -lcrypto
+```
+
 # MIT License
 
 Copyright (c) 2025 Kalasaikamesh944
@@ -22,3 +27,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
