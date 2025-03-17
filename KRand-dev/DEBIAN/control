@@ -1,0 +1,9 @@
+Package: KRand-dev
+Version: 1.0
+Section: devel
+Priority: Cybersecurity
+Architecture: amd64
+Maintainer: SAI KAMESH YADAVALLI  saikamesh.y@gmail.com
+Description: KRand development library
+ This package provides the KRand library for packet sniffing and cryptographic functions.
+Depends: libssl-dev, libpcap-dev, libcurl4-openssl-dev
