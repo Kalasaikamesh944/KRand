@@ -1,6 +1,7 @@
 # KRand
 KRand powerful module for cpp for hacking
-MIT License
+
+# MIT License
 
 Copyright (c) 2025 Kalasaikamesh944
 
