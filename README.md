@@ -1,5 +1,5 @@
 # KRand
-KRand powerful module for cpp for hacking
+KRand powerful module with cpp for hacking
 
 # MIT License
 
